@@ -16,3 +16,7 @@ Make sure to select appropriate OS and to perform all steps till
 
 
 ![Blinky funcionando](docs/images/blinky.jpg)
+
+![Kconfig funcionando](docs/images/Kconfig.png.png)
+
+
