@@ -4,21 +4,19 @@
 
 LOG_MODULE_REGISTER(led_app, LOG_LEVEL_DBG);
 
-#define LED0_NODE DT_ALIAS(led0)
-static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+#define APP_LED_NODE DT_ALIAS(app_led)
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(APP_LED_NODE, gpios);
 
 int main(void)
 {
-    LOG_INF("LED Subsystem starting...");
-    LOG_INF("Blink period: %d ms", CONFIG_LED_BLINK_SLEEP_MS);
-    LOG_INF("Brightness:   %d", CONFIG_LED_BRIGHTNESS);
-    LOG_INF("Fade time:    %d ms", CONFIG_LED_FADE_TIME);
+    LOG_INF("Heartbeat LED starting...");
+    LOG_INF("Blink period: %d ms", CONFIG_APP_HEARTBEAT_PERIOD_MS);
 
     gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
 
     while (1) {
         gpio_pin_toggle_dt(&led);
-        k_msleep(CONFIG_LED_BLINK_SLEEP_MS);
+        k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
         LOG_DBG("LED toggled");
     }
 
