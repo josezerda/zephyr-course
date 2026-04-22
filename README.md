@@ -15,6 +15,7 @@ Make sure to select appropriate OS and to perform all steps till
 ---
 
 ## Clone and Build This Project
+### l2-task1
 
 Execute:
 
@@ -27,6 +28,14 @@ west update
 west build -p always -b nucleo_h7s3l8 ~/zephyrproject/zephyr/samples/basic/blinky
 west flash
 ```
+### l3-task1
+Execute:
+
+```bash
+cd app
+west build -b nucleo_h7s3l8/stm32h7s3xx/ext_flash_app
+west build -t menuconfig
+```  
 
 
 ![Blinky funcionando](docs/images/blinky.jpg)
