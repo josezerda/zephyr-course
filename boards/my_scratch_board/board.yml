@@ -1,0 +1,6 @@
+board:
+  name: my_scratch_board
+  full_name: My Custom Board From Scratch
+  vendor: st
+  socs:
+    - name: stm32h7s3xx

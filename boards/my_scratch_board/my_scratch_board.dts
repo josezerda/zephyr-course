@@ -1,0 +1,61 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <st/h7rs/stm32h7s3X8.dtsi>
+#include <st/h7/stm32h7s3l8hx-pinctrl.dtsi>
+
+/ {
+	model = "My Custom Board From Scratch";
+	compatible = "st,stm32h7s3l8-nucleo";
+
+	chosen {
+		zephyr,console = &usart3;
+		zephyr,shell-uart = &usart3;
+		zephyr,dtcm = &dtcm;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,flash-controller = &flash;
+	};
+};
+
+&clk_hse {
+	clock-frequency = <DT_FREQ_M(24)>;
+	hse-bypass;
+	status = "okay";
+};
+
+&pll {
+	div-m = <12>;
+	mul-n = <200>;
+	div-p = <2>;
+	div-q = <2>;
+	div-r = <2>;
+	div-s = <2>;
+	div-t = <2>;
+	clocks = <&clk_hse>;
+	status = "okay";
+};
+
+&rcc {
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(200)>;
+	dcpre = <1>;
+	hpre = <1>;
+	ppre1 = <2>;
+	ppre2 = <2>;
+	ppre4 = <2>;
+	ppre5 = <2>;
+};
+
+&pwr {
+	power-supply = "ldo";
+};
+
+&usart3 {
+	pinctrl-0 = <&usart3_tx_pd8 &usart3_rx_pd9>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+	status = "okay";
+};
