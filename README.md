@@ -42,4 +42,21 @@ west build -t menuconfig
 
 ![Kconfig funcionando](docs/images/Kconfig.png.png)
 
+---
+
+### l5-task2: Custom Board From Scratch
+
+Board structure for `my_scratch_board`:
+
+| File | Purpose |
+|---|---|
+| `board.yml` | Board metadata (name, SoC) |
+| `Kconfig.my_scratch_board` | Selects `SOC_STM32H7S3XX` |
+| `Kconfig.defconfig` | Board-level Kconfig defaults |
+| `my_scratch_board.dts` | Minimal DTS: clocks, USART3, flash, RAM |
+| `my_scratch_board_defconfig` | Enables UART, console, GPIO |
+| `board.cmake` | STM32CubeProgrammer flash runner |
+| `CMakeLists.txt` | Compiles `board_init.c` |
+| `board_init.c` | `SYS_INIT` prints "Board Initialized" before `main()` |
+
 
