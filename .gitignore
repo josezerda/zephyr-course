@@ -1,5 +1,9 @@
 # Build
 build
+bootloader
+modules
+tools
+zephyr
 
 # West files
 .west
