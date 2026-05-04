@@ -1,23 +1,31 @@
 #include <zephyr/kernel.h>
-#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/sensor.h>
 #include <zephyr/logging/log.h>
 
 LOG_MODULE_REGISTER(led_app, LOG_LEVEL_DBG);
 
-#define APP_LED_NODE DT_ALIAS(app_led)
-static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(APP_LED_NODE, gpios);
-
 int main(void)
 {
-    LOG_INF("Heartbeat LED starting...");
+    const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(led_sensor));
+
+    if (!device_is_ready(dev)) {
+        LOG_ERR("LED sensor not ready");
+        return -ENODEV;
+    }
+
+    LOG_INF("LED sensor driver demo starting...");
     LOG_INF("Blink period: %d ms", CONFIG_APP_HEARTBEAT_PERIOD_MS);
 
-    gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE);
-
     while (1) {
-        gpio_pin_toggle_dt(&led);
+        sensor_sample_fetch(dev);
+        LOG_DBG("LED ON");
         k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
-        LOG_DBG("LED toggled");
+
+        struct sensor_value val;
+
+        sensor_channel_get(dev, SENSOR_CHAN_ALL, &val);
+        LOG_DBG("LED OFF");
+        k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
     }
 
     return 0;
