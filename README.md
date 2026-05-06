@@ -85,3 +85,16 @@ Modified app files:
 - `app/src/main.cpp` — uses `sensor_sample_fetch` / `sensor_channel_get` to blink the LED
 
 > **Key gotcha:** `module.yml` must use `build.settings.dts_root: .` (not `dts.bindings`) for Zephyr to include the module's `dts/bindings/` in the DTS compilation path.
+
+---
+
+### l6-task2: Custom Extension API
+
+**Driver changes** (`led_sensor.c`, `led_sensor.h`):
+
+- `struct led_sensor_data` now has a `blink_count` field (the dynamic data parameter)
+- `struct led_sensor_driver_api` extends `sensor_driver_api` by appending a `set_blink_count` function pointer — `sensor_driver_api` is the first member so the sensor subsystem can safely cast `dev->api` to the standard type
+- `sample_fetch` increments `blink_count`; `channel_get` returns it in `val.val1`
+- `led_sensor_set_blink_count()` is an inline public helper in the header that casts `dev->api` and calls the function pointer
+
+**App** (`main.cpp`): calls `led_sensor_set_blink_count(dev, 0)` at startup to reset the counter, then logs the running count each blink via `val.val1` from `channel_get`.
