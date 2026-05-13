@@ -110,3 +110,20 @@ Added a `sensor` root shell command with three subcommands (`app/src/sensor_shel
 | `sensor info` | Driver is initialised and `device_is_ready()` returns true |
 | `sensor fetch` | `sensor_sample_fetch` is wired through the API to `gpio_pin_set(..., 1)` — LED visibly turns on |
 | `sensor read` | `sensor_channel_get` turns LED off and returns `blink_count` from the dynamic data struct — proving the data struct is live and accumulating state |
+
+---
+
+### l7-task2: Extension API as Shell Subcommand
+
+Added `sensor set <value>` to `app/src/sensor_shell.c` using `SHELL_CMD_ARG`:
+
+- `SHELL_CMD_ARG(set, ..., 2, 0)` enforces argument count — the shell framework rejects the command before the handler runs if the value is missing
+- Handler validates content with `shell_strtoul` (catches non-numeric input) and range-checks against `BLINK_COUNT_MAX` (100000), printing `shell_error` on failure
+- On success calls `led_sensor_set_blink_count()` from the L06 Task 2 extension API to update `blink_count` in the driver's dynamic data struct
+
+| Input | Validation layer | Result |
+|---|---|---|
+| `sensor set` | `SHELL_CMD_ARG` (count) | `wrong parameter count` |
+| `sensor set abc` | `shell_strtoul` (type) | `error: invalid value 'abc'` |
+| `sensor set 999999` | range check (value) | `error: value out of range — must be 0..100000` |
+| `sensor set 42` | passes all checks | `blink_count set to 42` |
