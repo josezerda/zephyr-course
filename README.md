@@ -98,3 +98,15 @@ Modified app files:
 - `led_sensor_set_blink_count()` is an inline public helper in the header that casts `dev->api` and calls the function pointer
 
 **App** (`main.cpp`): calls `led_sensor_set_blink_count(dev, 0)` at startup to reset the counter, then logs the running count each blink via `val.val1` from `channel_get`.
+
+---
+
+### l7-task1: Sensor Shell Commands
+
+Added a `sensor` root shell command with three subcommands (`app/src/sensor_shell.c`):
+
+| Command | What it proves |
+|---|---|
+| `sensor info` | Driver is initialised and `device_is_ready()` returns true |
+| `sensor fetch` | `sensor_sample_fetch` is wired through the API to `gpio_pin_set(..., 1)` — LED visibly turns on |
+| `sensor read` | `sensor_channel_get` turns LED off and returns `blink_count` from the dynamic data struct — proving the data struct is live and accumulating state |
