@@ -2,6 +2,10 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/shell/shell.h>
 
+#include "led_sensor.h"
+
+#define BLINK_COUNT_MAX  100000U
+
 static const struct device *const sensor_dev =
 	DEVICE_DT_GET(DT_NODELABEL(led_sensor));
 
@@ -39,10 +43,38 @@ static int cmd_sensor_info(const struct shell *sh, size_t argc, char **argv)
 	return 0;
 }
 
+static int cmd_sensor_set(const struct shell *sh, size_t argc, char **argv)
+{
+	int err = 0;
+	unsigned long val = shell_strtoul(argv[1], 10, &err);
+
+	if (err) {
+		shell_error(sh, "invalid value '%s': must be a non-negative integer", argv[1]);
+		return -EINVAL;
+	}
+
+	if (val > BLINK_COUNT_MAX) {
+		shell_error(sh, "value out of range — must be 0..%u", BLINK_COUNT_MAX);
+		return -ERANGE;
+	}
+
+	int ret = led_sensor_set_blink_count(sensor_dev, (uint32_t)val);
+
+	if (ret) {
+		shell_error(sh, "set_blink_count failed: %d", ret);
+		return ret;
+	}
+
+	shell_print(sh, "blink_count set to %lu", val);
+	return 0;
+}
+
 SHELL_STATIC_SUBCMD_SET_CREATE(sub_sensor,
 	SHELL_CMD(fetch, NULL, "Call sensor_sample_fetch (LED on)",  cmd_sensor_fetch),
 	SHELL_CMD(read,  NULL, "Call sensor_channel_get (LED off, print blink_count)", cmd_sensor_read),
 	SHELL_CMD(info,  NULL, "Print device name and ready state",  cmd_sensor_info),
+	SHELL_CMD_ARG(set, NULL, "Set blink_count <value> [0.." STRINGIFY(BLINK_COUNT_MAX) "]",
+		      cmd_sensor_set, 2, 0),
 	SHELL_SUBCMD_SET_END
 );
 
