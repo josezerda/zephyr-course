@@ -2,6 +2,7 @@
 build
 bootloader
 modules
+!app/modules
 tools
 zephyr
 
