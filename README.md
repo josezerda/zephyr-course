@@ -127,3 +127,35 @@ Added `sensor set <value>` to `app/src/sensor_shell.c` using `SHELL_CMD_ARG`:
 | `sensor set abc` | `shell_strtoul` (type) | `error: invalid value 'abc'` |
 | `sensor set 999999` | range check (value) | `error: value out of range — must be 0..100000` |
 | `sensor set 42` | passes all checks | `blink_count set to 42` |
+
+---
+
+### l8-task1: Ring Buffer Unit Tests
+
+**New files:**
+
+```
+app/modules/ring_buf/
+├── include/ring_buf.h     — public API (rb_ prefix to avoid Zephyr's ring_buf_* clash)
+└── src/ring_buf.c         — circular FIFO implementation
+
+tests/ring_buf/
+├── testcase.yaml          — twister suite discovery
+├── prj.conf               — CONFIG_ZTEST=y, CONFIG_ZTEST_SHUFFLE=y
+├── CMakeLists.txt         — links test file + ring_buf.c, adds include path
+└── src/test_ring_buf.c    — 1 provided + 7 implemented tests
+```
+
+**The 7 implemented tests:**
+
+| Suite | Test | What it verifies |
+|---|---|---|
+| `ring_buf_init` | `test_reinit_clears_state` | `rb_init()` after a push resets count to 0 |
+| `ring_buf_push_pop` | `test_single_push_pop` | push 42 → pop returns 42, buffer empty |
+| `ring_buf_push_pop` | `test_fifo_order` | push 1,2,3 → pop returns 1,2,3 in order |
+| `ring_buf_push_pop` | `test_push_full_returns_enospc` | 5th push on capacity-4 buffer → `-ENOSPC` |
+| `ring_buf_boundaries` | `test_peek_does_not_consume` | two peeks both return same value, count stays 1 |
+| `ring_buf_boundaries` | `test_pop_null_returns_einval` | `rb_pop(NULL)` → `-EINVAL` |
+| `ring_buf_boundaries` | `test_is_full_after_fill` | 4 pushes → `rb_is_full()` true, `rb_count()` == 4 |
+
+**Result:** 8/8 passed on `native_sim` — `west twister -T tests/ring_buf -p native_sim`
