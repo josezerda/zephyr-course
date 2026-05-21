@@ -159,3 +159,27 @@ tests/ring_buf/
 | `ring_buf_boundaries` | `test_is_full_after_fill` | 4 pushes → `rb_is_full()` true, `rb_count()` == 4 |
 
 **Result:** 8/8 passed on `native_sim` — `west twister -T tests/ring_buf -p native_sim`
+
+---
+
+### l8-task2: Coverage Report
+
+Run with:
+
+```bash
+west twister -T tests/ring_buf -p native_sim \
+    --coverage --coverage-tool gcovr \
+    --coverage-basedir app/modules/ring_buf
+```
+
+**Coverage results for `ring_buf.c`:**
+
+| Metric | Result | Threshold | Status |
+|---|---|---|---|
+| Lines | **88.2%** (30/34) | ≥ 81% | PASS |
+| Functions | **100.0%** (7/7) | 100% | PASS |
+| Branches | **64.3%** (9/14) | ≥ 64% | PASS |
+
+The uncovered lines are the `LOG_ERR` / `LOG_WRN` paths inside `rb_init` (invalid capacity guard) — unreachable by the current tests because `before()` always calls `rb_init(4)`. All 7 public functions are fully exercised.
+
+HTML report: `twister-out/coverage/index.html`
